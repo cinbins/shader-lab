@@ -19,7 +19,10 @@ type Node = TSLNode
 // Gradient map: luminance → five colour stops (void, shadow, mid, highlight, top), with the
 // mid stop drifting toward the shadow colour on a slow sine (the neo-cypherpunk warm→cold cycle).
 // Luminance is stretched between black/white point first so dim sources (an ASCII pass) still reach the top.
+// Points are linear luminance: 0.45 linear is roughly 0.7 on a display-referred levels tool.
 
+// The chain is linear-light (render targets are half-float, the display pass encodes to sRGB), so the
+// picker hex is decoded to linear here. Luminance below is linear luminance too.
 function hexToLinearRgb(
   value: unknown,
   fallback: string
