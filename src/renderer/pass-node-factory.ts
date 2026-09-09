@@ -1,8 +1,8 @@
 import { AsciiPass } from "@/renderer/ascii-pass"
 import { BlobTrackingPass } from "@/renderer/blob-tracking-pass"
 import { BloomPass } from "@/renderer/bloom-pass"
-import { CircuitBentPass } from "@/renderer/circuit-bent-pass"
 import { ChromaticAberrationPass } from "@/renderer/chromatic-aberration-pass"
+import { CircuitBentPass } from "@/renderer/circuit-bent-pass"
 import { CrtPass } from "@/renderer/crt-pass"
 import { DirectionalBlurPass } from "@/renderer/directional-blur-pass"
 import { DisplacementMapPass } from "@/renderer/displacement-map-pass"
@@ -11,6 +11,7 @@ import { EdgeDetectPass } from "@/renderer/edge-detect-pass"
 import { FlutedGlassPass } from "@/renderer/fluted-glass-pass"
 import { HalftonePass } from "@/renderer/halftone-pass"
 import { InkPass } from "@/renderer/ink-pass"
+import { PaletteMapPass } from "@/renderer/palette-map-pass"
 import { ParticleGridPass } from "@/renderer/particle-grid-pass"
 import { PassNode } from "@/renderer/pass-node"
 import { PatternPass } from "@/renderer/pattern-pass"
@@ -65,6 +66,8 @@ export function createPassNode(
       return new PlotterPass(layerId)
     case "posterize":
       return new PosterizePass(layerId)
+    case "palette-map":
+      return new PaletteMapPass(layerId)
     case "threshold":
       return new ThresholdPass(layerId)
     case "pixel-sorting":

@@ -58,6 +58,7 @@ export type AddLayerAction =
   | "pattern"
   | "pixel-sorting"
   | "plotter"
+  | "palette-map"
   | "posterize"
   | "slice"
   | "smear"
@@ -123,6 +124,7 @@ const EFFECT_ORDER: readonly AddLayerAction[] = [
   "pixelation",
   "voxel",
   "posterize",
+  "palette-map",
   "threshold",
   "bloom",
   "plotter",

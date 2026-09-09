@@ -158,6 +158,12 @@ export const LAYER_CATALOG: Record<LayerType, LayerCatalogEntry> = {
     label: "Plotter",
     previewSrc: "/examples/plotter.webp",
   },
+  "palette-map": {
+    category: "core",
+    description:
+      "Remaps luminance to a five-stop colour ramp, with the mids drifting on a slow cycle. Gradient map / duotone.",
+    label: "Palette Map",
+  },
   posterize: {
     category: "core",
     description:
