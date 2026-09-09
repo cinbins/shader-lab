@@ -5,7 +5,7 @@ import type { VideoExportFormat } from "@/lib/editor/export"
 type Mp4MuxerCodec = "avc" | "hevc"
 type WebMMuxerCodec = "V_VP8" | "V_VP9"
 
-// The muxers want an integer: it is only the MP4 track timescale (WebM ignores fractions).
+// mp4-muxer wants an integer: it is only the MP4 track timescale.
 // 29.97 → 29970 keeps every 1/29.97 s frame on an exact tick.
 function muxerFrameRate(fps: number): number {
   return Number.isInteger(fps) ? fps : Math.round(fps * 1000)
@@ -436,7 +436,7 @@ async function createMuxer(
     target: stream ? new WebMFileTarget(stream) : (memoryTarget as never),
     video: {
       codec: support.muxerCodec as WebMMuxerCodec,
-      frameRate: muxerFrameRate(options.fps),
+      frameRate: options.fps, // WebM: DefaultDuration = 1e9 / fps, fractions are fine
       height: options.height,
       width: options.width,
     },
