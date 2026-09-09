@@ -4,12 +4,20 @@ import {
   resolveTextFontFamily,
 } from "@/lib/editor/text-fonts"
 import { computeSignedDistanceField } from "@/lib/sdf/distance-transform"
+import {
+  buildHangulFull,
+  HANGUL_JAMO,
+  HANGUL_KSX1001,
+} from "@/renderer/hangul-charsets"
 
 export const ASCII_CHARSETS: Record<string, string> = {
   binary: "01",
   blocks: " ░▒▓█",
   boxes: " ·─│┌┐└┘├┤┬┴┼█",
   dense: " .',:;!|({#@",
+  hangul: HANGUL_KSX1001,
+  "hangul-full": buildHangulFull(),
+  "hangul-jamo": HANGUL_JAMO,
   hatching: " ╱╲╳░▒",
   hex: " 0123456789ABCDEF",
   katakana: " ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾔﾕﾗﾘﾜ",
@@ -30,6 +38,10 @@ const MAX_CELL_ASPECT = 2
 const FEATURE_SIZE = 4
 const FEATURE_DIM = FEATURE_SIZE * FEATURE_SIZE
 const FEATURE_TEXELS = FEATURE_DIM / 4
+export const RAMP_LUT_SIZE = 1024
+export const ASCII_FEATURE_TEXELS = FEATURE_TEXELS
+
+export type AsciiTonemap = "coverage" | "rank"
 
 export type AsciiAtlas = {
   cellAspect: number
@@ -334,7 +346,7 @@ export function buildAsciiAtlas(
   const atlasWidth = columns * pitchWidth
   const atlasHeight = rows * pitchHeight
   const data = new Uint8Array(atlasWidth * atlasHeight * 4)
-  const featureData = new Float32Array(charCount * FEATURE_TEXELS * 4)
+  const featureData = new Float32Array(columns * FEATURE_TEXELS * rows * 4)
   const coverage: number[] = []
 
   for (let index = 0; index < ordered.length; index += 1) {
@@ -353,12 +365,14 @@ export function buildAsciiAtlas(
       innerHeight
     )
 
-    for (let dim = 0; dim < FEATURE_DIM; dim += 1) {
-      featureData[index * FEATURE_DIM + dim] = features[dim] ?? 0
-    }
-
     const column = index % columns
     const row = Math.floor(index / columns)
+    const featureBase =
+      (row * columns * FEATURE_TEXELS + column * FEATURE_TEXELS) * 4
+
+    for (let dim = 0; dim < FEATURE_DIM; dim += 1) {
+      featureData[featureBase + dim] = features[dim] ?? 0
+    }
     const originX = column * pitchWidth
     const originY = row * pitchHeight
 
@@ -391,8 +405,8 @@ export function buildAsciiAtlas(
 
   const featureTexture = new THREE.DataTexture(
     featureData,
-    FEATURE_TEXELS,
-    charCount,
+    columns * FEATURE_TEXELS,
+    rows,
     THREE.RGBAFormat,
     THREE.FloatType
   )
@@ -421,4 +435,67 @@ export function buildAsciiAtlas(
     sdfRadius: SDF_RADIUS,
     texture,
   }
+}
+
+/**
+ * Signal → glyph index lookup (RAMP_LUT_SIZE texels, index in .r).
+ * rank: evenly spaced ramp positions (the classic ASCII mapping).
+ * coverage: the glyph whose ink coverage is nearest to signal × densest
+ * coverage, so the tone of a cell tracks the picture linearly — with a large
+ * charset (Hangul) this is what keeps the image readable.
+ */
+export function buildRampLutTexture(
+  atlas: AsciiAtlas,
+  tonemap: AsciiTonemap
+): THREE.DataTexture {
+  const rampCount = Math.max(1, atlas.rampCount)
+  const coverage = atlas.coverage.slice(0, rampCount)
+  const maxCoverage = coverage.reduce((peak, value) => Math.max(peak, value), 0)
+  const data = new Float32Array(RAMP_LUT_SIZE * 4)
+
+  for (let texel = 0; texel < RAMP_LUT_SIZE; texel += 1) {
+    const signal = texel / (RAMP_LUT_SIZE - 1)
+    let index = Math.round(signal * (rampCount - 1))
+
+    if (tonemap === "coverage" && maxCoverage > 0 && rampCount > 1) {
+      const target = signal * maxCoverage
+      let low = 0
+      let high = rampCount - 1
+
+      while (low < high) {
+        const middle = (low + high) >> 1
+
+        if ((coverage[middle] ?? 0) < target) {
+          low = middle + 1
+        } else {
+          high = middle
+        }
+      }
+
+      const previous = Math.max(0, low - 1)
+      const distanceLow = Math.abs((coverage[low] ?? 0) - target)
+      const distancePrevious = Math.abs((coverage[previous] ?? 0) - target)
+      index = distancePrevious < distanceLow ? previous : low
+    }
+
+    data[texel * 4] = index
+    data[texel * 4 + 3] = 1
+  }
+
+  const texture = new THREE.DataTexture(
+    data,
+    RAMP_LUT_SIZE,
+    1,
+    THREE.RGBAFormat,
+    THREE.FloatType
+  )
+  texture.colorSpace = THREE.NoColorSpace
+  texture.generateMipmaps = false
+  texture.magFilter = THREE.NearestFilter
+  texture.minFilter = THREE.NearestFilter
+  texture.wrapS = THREE.ClampToEdgeWrapping
+  texture.wrapT = THREE.ClampToEdgeWrapping
+  texture.needsUpdate = true
+
+  return texture
 }

@@ -189,6 +189,76 @@ const TEXT_FONT_DEFINITIONS = [
     },
   },
   {
+    defaultWeight: 500,
+    fallback: '"Apple SD Gothic Neo", Pretendard, sans-serif',
+    label: "Apple SD Gothic Neo (KR)",
+    value: "apple-sd-gothic",
+    weights: {
+      kind: "fixed",
+      weights: [100, 200, 300, 400, 500, 600, 700, 800, 900],
+    },
+  },
+  {
+    defaultWeight: 500,
+    fallback: 'Pretendard, "Apple SD Gothic Neo", sans-serif',
+    label: "Pretendard (KR)",
+    value: "pretendard",
+    weights: {
+      kind: "fixed",
+      weights: [100, 200, 300, 400, 500, 600, 700, 800, 900],
+    },
+  },
+  {
+    defaultWeight: 400,
+    fallback: 'AppleMyungjo, "Apple SD Gothic Neo", serif',
+    label: "AppleMyungjo (KR serif)",
+    value: "apple-myungjo",
+    weights: {
+      kind: "fixed",
+      weights: [400],
+    },
+  },
+  {
+    defaultWeight: 400,
+    fallback: '"Black Han Sans", "Apple SD Gothic Neo", sans-serif',
+    label: "Black Han Sans (KR)",
+    value: "black-han-sans",
+    weights: {
+      kind: "fixed",
+      weights: [400],
+    },
+  },
+  {
+    defaultWeight: 400,
+    fallback: 'NanumGothic, "Apple SD Gothic Neo", sans-serif',
+    label: "Nanum Gothic (KR)",
+    value: "nanum-gothic",
+    weights: {
+      kind: "fixed",
+      weights: [400, 700, 800],
+    },
+  },
+  {
+    defaultWeight: 400,
+    fallback: 'NanumGothicCoding, "Apple SD Gothic Neo", monospace',
+    label: "Nanum Gothic Coding (KR mono)",
+    value: "nanum-gothic-coding",
+    weights: {
+      kind: "fixed",
+      weights: [400, 700],
+    },
+  },
+  {
+    defaultWeight: 400,
+    fallback: '"YoonA px Pixelbatang", AppleMyungjo, serif',
+    label: "Pixelbatang (KR pixel)",
+    value: "pixelbatang",
+    weights: {
+      kind: "fixed",
+      weights: [400],
+    },
+  },
+  {
     defaultWeight: 700,
     fallback: 'Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif',
     label: "Impact",
