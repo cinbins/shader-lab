@@ -47,7 +47,7 @@ const ACCEPTED_TYPES = new Set([
   "audio/webm",
 ])
 
-const MAX_SIZE_BYTES = 100 * 1024 * 1024
+const MAX_SIZE_BYTES = 4 * 1024 * 1024 * 1024 // 4 GB: 4K H.264 scene plates for post
 
 function validateFile(file: File): AssetKind {
   const kind = inferFileAssetKind(file)

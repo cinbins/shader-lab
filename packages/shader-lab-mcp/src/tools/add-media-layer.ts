@@ -5,8 +5,8 @@ import type { InferSchema, ToolMetadata } from "xmcp"
 import { getBridge } from "../lib/bridge"
 import { errorResult, textResult } from "../lib/proxy"
 
-const MAX_MEDIA_BYTES = 50 * 1024 * 1024
-const ADD_MEDIA_TIMEOUT_MS = 30_000
+const MAX_MEDIA_BYTES = 600 * 1024 * 1024 // base64 string ceiling in V8, not a design limit
+const ADD_MEDIA_TIMEOUT_MS = 180_000
 
 export const schema = {
   base64: z

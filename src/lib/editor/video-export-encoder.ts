@@ -565,7 +565,7 @@ export async function createVideoExportEncoder(
 
       try {
         encoder.encode(frame, {
-          keyFrame: frameIndex % Math.max(1, options.fps) === 0,
+          keyFrame: frameIndex % Math.max(1, Math.round(options.fps)) === 0,
         })
       } finally {
         frame.close()

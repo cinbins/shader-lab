@@ -97,7 +97,7 @@ const QUALITY_PRESETS: ExportQualityPreset[] = [
   "high",
   "ultra",
 ]
-const VIDEO_FPS_PRESETS = [24, 30, 60] as const
+const VIDEO_FPS_PRESETS = [23.976, 24, 25, 29.97, 30, 50, 59.94, 60] as const
 const DEFAULT_VIDEO_EXPORT_DURATION = 8
 const VIDEO_DURATION_STEP = 0.25
 const DEFAULT_MAX_EXPORT_DIMENSION = 8192
@@ -283,7 +283,7 @@ export function EditorExportDialog({
   const willStreamToDisk = needsStreamToDisk && supportsSaveFilePicker()
   const audioModulationPending =
     audioLinkCount > 0 && audioSourceRef !== null && audioStatus !== "ready"
-  const [videoFps, setVideoFps] = useState(30)
+  const [videoFps, setVideoFps] = useState(29.97)
   const [videoFormat, setVideoFormat] = useState<VideoExportFormat>("webm")
   const [videoDurationDirty, setVideoDurationDirty] = useState(false)
   const [videoProgress, setVideoProgress] = useState<{
