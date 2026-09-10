@@ -161,7 +161,7 @@ export const LAYER_CATALOG: Record<LayerType, LayerCatalogEntry> = {
   "palette-map": {
     category: "core",
     description:
-      "Remaps luminance to a five-stop colour ramp, with the mids drifting on a slow cycle. Gradient map / duotone.",
+      "Remaps luminance to a colour ramp between a warm pole (red/magenta) and a cold pole (blue/cyan) under one keyframable Temperature, white top held constant. Gradient map / duotone.",
     label: "Palette Map",
   },
   posterize: {
