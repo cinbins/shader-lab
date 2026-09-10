@@ -2816,9 +2816,9 @@ const paletteMapParams = [
     type: "number",
   },
   {
-    defaultValue: 0.55,
+    defaultValue: 0.85,
     description:
-      "Source luminance that maps to the top colour. Lower it for dim sources such as an ASCII pass.",
+      "Source luminance that maps to the top colour. Only true highlights should reach it.",
     group: "Signal",
     key: "whitePoint",
     label: "White Point",
@@ -2828,14 +2828,26 @@ const paletteMapParams = [
     type: "number",
   },
   {
+    defaultValue: 0.5,
+    description:
+      "Stretched luminance that lands on the ramp centre (violet). Lower = more of the picture goes red; higher = more stays blue.",
+    group: "Signal",
+    key: "midpoint",
+    label: "Midpoint",
+    max: 0.95,
+    min: 0.05,
+    step: 0.01,
+    type: "number",
+  },
+  {
     defaultValue: 1,
     description:
-      "Curve on the stretched signal before the ramp: <1 pushes the picture up the ramp (redder), >1 keeps more of it in the blues.",
+      "How much luminance the whole ramp covers. 1 = the full range is one long gradient; lower = a harder blue/red split around the midpoint.",
     group: "Signal",
-    key: "gamma",
-    label: "Ramp Gamma",
-    max: 3,
-    min: 0.3,
+    key: "spread",
+    label: "Spread",
+    max: 2,
+    min: 0.1,
     step: 0.01,
     type: "number",
   },
