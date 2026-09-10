@@ -46,7 +46,7 @@ import { useLayerStore } from "@/store/layer-store"
 import { useTimelineStore } from "@/store/timeline-store"
 import type { AssetKind, EditorAsset, EditorLayer } from "@/types/editor"
 
-type LayerAction = "delete" | "duplicate" | "reset"
+type LayerAction = "delete" | "duplicate" | "reset" | "replace"
 
 const thumbnailBaseClassName =
   "relative size-7 overflow-hidden rounded-[var(--ds-radius-thumb)] border border-[var(--ds-border-divider)]"
@@ -133,6 +133,7 @@ type LayerListItemProps = {
 }
 
 const LAYER_ACTION_OPTIONS = [
+  { label: "Replace media…", value: "replace" },
   { label: "Duplicate layer", value: "duplicate" },
   { label: "Reset properties", value: "reset" },
   { label: "Delete layer", value: "delete" },
@@ -273,7 +274,9 @@ const LayerListItem = memo(function LayerListItem({
               onSetLayerVisibility(layer.id, !layer.visible)
             }}
             tooltip="Toggle visibility"
-            uiSound={layer.visible ? "action.visibilityOff" : "action.visibilityOn"}
+            uiSound={
+              layer.visible ? "action.visibilityOff" : "action.visibilityOn"
+            }
             variant="ghost"
           >
             {layer.visible ? (
@@ -384,7 +387,9 @@ const LayerListItem = memo(function LayerListItem({
             onSetLayerVisibility(layer.id, !layer.visible)
           }}
           tooltip="Toggle visibility"
-          uiSound={layer.visible ? "action.visibilityOff" : "action.visibilityOn"}
+          uiSound={
+            layer.visible ? "action.visibilityOff" : "action.visibilityOn"
+          }
           variant="ghost"
         >
           {layer.visible ? (
@@ -536,7 +541,13 @@ export function LayerSidebar() {
       ? selectedLayerIds
       : [layerId]
 
-    if (action === "delete") {
+    if (action === "replace") {
+      // ATB: swap the asset of a source layer in place (same position, same params) — the relink path, offered for every asset-backed layer
+      const target = layers.find((layer) => layer.id === layerId)
+      if (target?.assetId) {
+        handleRelinkPick(target)
+      }
+    } else if (action === "delete") {
       removeLayers(targetLayerIds)
       playUISound("action.deleteLayer")
     } else if (action === "duplicate") {
