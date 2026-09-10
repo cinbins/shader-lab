@@ -21,6 +21,7 @@ import { PlotterPass } from "@/renderer/plotter-pass"
 import { PosterizePass } from "@/renderer/posterize-pass"
 import { SlicePass } from "@/renderer/slice-pass"
 import { SmearPass } from "@/renderer/smear-pass"
+import { TemperaturePass } from "@/renderer/temperature-pass"
 import { ThresholdPass } from "@/renderer/threshold-pass"
 import { VoxelPass } from "@/renderer/voxel-pass"
 import type { EffectLayerType } from "@/types/editor"
@@ -68,6 +69,8 @@ export function createPassNode(
       return new PosterizePass(layerId)
     case "palette-map":
       return new PaletteMapPass(layerId)
+    case "temperature":
+      return new TemperaturePass(layerId)
     case "threshold":
       return new ThresholdPass(layerId)
     case "pixel-sorting":

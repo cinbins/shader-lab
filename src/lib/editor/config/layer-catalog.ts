@@ -161,8 +161,14 @@ export const LAYER_CATALOG: Record<LayerType, LayerCatalogEntry> = {
   "palette-map": {
     category: "core",
     description:
-      "Remaps luminance to a colour ramp between a warm pole (red/magenta) and a cold pole (blue/cyan) under one keyframable Temperature, white top held constant. Gradient map / duotone.",
+      "Remaps luminance to the nine-stop neo-cypherpunk house ramp (black → indigo → cobalt → violet → magenta → red → white top). Gradient map.",
     label: "Palette Map",
+  },
+  temperature: {
+    category: "core",
+    description:
+      "Emotion override: rotates hues toward a warm (red/magenta) or cold (blue/cyan) pole in OKLab, keeping lightness and neutrals. Keyframe it per scene.",
+    label: "Temperature",
   },
   posterize: {
     category: "core",

@@ -59,6 +59,7 @@ export const EFFECT_LAYER_TYPES = [
   "chromatic-aberration",
   "voxel",
   "palette-map",
+  "temperature",
 ] as const
 export type EffectLayerType = (typeof EFFECT_LAYER_TYPES)[number]
 
