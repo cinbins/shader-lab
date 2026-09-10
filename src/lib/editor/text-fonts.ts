@@ -200,6 +200,16 @@ const TEXT_FONT_DEFINITIONS = [
   },
   {
     defaultWeight: 500,
+    fallback: '"Gothic A1", "Apple SD Gothic Neo", sans-serif',
+    label: "Gothic A1 (KR, ATB house)",
+    value: "gothic-a1",
+    weights: {
+      kind: "fixed",
+      weights: [100, 200, 300, 400, 500, 600, 700, 800, 900],
+    },
+  },
+  {
+    defaultWeight: 500,
     fallback: 'Pretendard, "Apple SD Gothic Neo", sans-serif',
     label: "Pretendard (KR)",
     value: "pretendard",
