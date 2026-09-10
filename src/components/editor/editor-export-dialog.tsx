@@ -28,17 +28,20 @@ import { Typography } from "@/components/ui/typography"
 import type { UISoundId } from "@/lib/audio/shader-lab-sounds"
 import { playOptionalUISound } from "@/lib/audio/shader-lab-sounds"
 import { cn } from "@/lib/cn"
+import { requestAutosave } from "@/lib/editor/autosave/bus"
+import { withAutosaveSuppressed } from "@/lib/editor/autosave/suppress"
+import { getEffectiveCompositionSize } from "@/lib/editor/composition"
 import {
   ASPECT_PRESET_LABELS,
   clampExportSize,
   type ExportAspectPreset,
   type ExportQualityPreset,
+  estimateVideoExportBytes,
   exportStillImage,
   exportVideo,
   getAspectRatioForPreset,
   getDimensionsForPreset,
   getMaxDimensionForQuality,
-  estimateVideoExportBytes,
   getMaxExportDimension,
   getSupportedVideoMimeType,
   STREAM_TO_DISK_THRESHOLD_BYTES,
@@ -55,18 +58,11 @@ import {
   hasImportedCustomShaderCode,
   parseLabProjectFile,
 } from "@/lib/editor/project-file"
-import { requestAutosave } from "@/lib/editor/autosave/bus"
-import { withAutosaveSuppressed } from "@/lib/editor/autosave/suppress"
 import {
   buildShaderExportConfig,
   validateShaderExportSupport,
 } from "@/lib/editor/shader-export"
 import { generateShaderExportSnippet } from "@/lib/editor/shader-export-snippet"
-import {
-  type AudioAnalysisStatus,
-  selectAudioModulationInput,
-} from "@/store/audio-store"
-import { useDraftStore } from "@/store/draft-store"
 import {
   useAssetStore,
   useAudioStore,
@@ -74,6 +70,11 @@ import {
   useLayerStore,
   useTimelineStore,
 } from "@/store"
+import {
+  type AudioAnalysisStatus,
+  selectAudioModulationInput,
+} from "@/store/audio-store"
+import { useDraftStore } from "@/store/draft-store"
 
 type ExportTab = "image" | "project" | "shader" | "video"
 
@@ -217,7 +218,11 @@ export function EditorExportDialog({
   const outputSize = useEditorStore((state) => state.outputSize)
   const sceneConfig = useEditorStore((state) => state.sceneConfig)
   const liveCanvas = useEditorStore((state) => state.liveCanvas)
-  const compositionSize = outputSize
+  // ATB: export at the scene's fixed aspect (16:9 etc.), not the live canvas size — otherwise a 16:9 export is fitted from the viewport aspect and the layers shift.
+  const compositionSize = useMemo(
+    () => getEffectiveCompositionSize(sceneConfig, outputSize),
+    [sceneConfig, outputSize]
+  )
   const suggestedAspectPreset = useMemo(
     () => getSuggestedExportAspectPreset(sceneConfig),
     [sceneConfig]
@@ -1571,17 +1576,16 @@ function VideoTabContent({
             min={0}
             onChange={(value) =>
               onVideoStartChange(
-                Math.min(Math.max(0, value), Math.max(0, timelineDuration - 0.25))
+                Math.min(
+                  Math.max(0, value),
+                  Math.max(0, timelineDuration - 0.25)
+                )
               )
             }
             step={0.25}
             value={videoStart}
           />
-          <Typography
-            className="leading-[14px]"
-            tone="muted"
-            variant="caption"
-          >
+          <Typography className="leading-[14px]" tone="muted" variant="caption">
             {`${formatRangeSeconds(videoStart)} \u2013 ${formatRangeSeconds(videoStart + videoDuration)}`}
           </Typography>
         </div>
@@ -1602,7 +1606,6 @@ function VideoTabContent({
                 onClick={() => onIncludeAudioChange(false)}
               />
             </PresetRow>
-
           </div>
         </FieldLabel>
       ) : null}
@@ -1898,7 +1901,10 @@ function buildRenderProjectState() {
   return {
     assets,
     audio: selectAudioModulationInput(useAudioStore.getState()),
-    compositionSize: editorState.outputSize,
+    compositionSize: getEffectiveCompositionSize(
+      editorState.sceneConfig,
+      editorState.outputSize
+    ),
     layers,
     sceneConfig: editorState.sceneConfig,
     timeline: {
